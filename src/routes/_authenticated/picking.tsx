@@ -3,7 +3,7 @@ import { Play, Plus } from "lucide-react";
 import { pickWaves } from "@/lib/wms-data";
 import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
 
-export const Route = createFileRoute("/picking")({
+export const Route = createFileRoute("/_authenticated/picking")({
   head: () => ({ meta: [{ title: "Picking · CORTA WMS" }] }),
   component: PickingPage,
 });

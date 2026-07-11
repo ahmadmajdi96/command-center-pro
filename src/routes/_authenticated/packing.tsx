@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Package, Printer } from "lucide-react";
 import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
 
-export const Route = createFileRoute("/packing")({
+export const Route = createFileRoute("/_authenticated/packing")({
   head: () => ({ meta: [{ title: "Packing · CORTA WMS" }] }),
   component: PackingPage,
 });

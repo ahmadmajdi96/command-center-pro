@@ -3,7 +3,7 @@ import { Plus, Check, X } from "lucide-react";
 import { adjustments } from "@/lib/wms-data";
 import { PageHeader, Stat } from "@/components/status-pill";
 
-export const Route = createFileRoute("/inventory/adjustments")({
+export const Route = createFileRoute("/_authenticated/inventory/adjustments")({
   head: () => ({ meta: [{ title: "Adjustments · CORTA WMS" }] }),
   component: AdjustmentsPage,
 });

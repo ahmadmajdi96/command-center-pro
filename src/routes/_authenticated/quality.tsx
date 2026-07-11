@@ -3,7 +3,7 @@ import { ShieldCheck, Plus } from "lucide-react";
 import { qualityHolds } from "@/lib/wms-data";
 import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
 
-export const Route = createFileRoute("/quality")({
+export const Route = createFileRoute("/_authenticated/quality")({
   head: () => ({ meta: [{ title: "Quality Holds · CORTA WMS" }] }),
   component: QualityPage,
 });

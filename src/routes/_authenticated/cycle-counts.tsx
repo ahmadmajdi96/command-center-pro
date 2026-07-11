@@ -3,7 +3,7 @@ import { Plus, Scan } from "lucide-react";
 import { cycleCounts } from "@/lib/wms-data";
 import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
 
-export const Route = createFileRoute("/cycle-counts")({
+export const Route = createFileRoute("/_authenticated/cycle-counts")({
   head: () => ({ meta: [{ title: "Cycle Counts · CORTA WMS" }] }),
   component: CyclePage,
 });

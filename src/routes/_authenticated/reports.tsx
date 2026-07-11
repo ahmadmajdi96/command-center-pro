@@ -7,7 +7,7 @@ import { Download } from "lucide-react";
 import { accuracyTrend, oeeTrend, plantKpis, stockByCategory } from "@/lib/wms-data";
 import { PageHeader, Stat } from "@/components/status-pill";
 
-export const Route = createFileRoute("/reports")({
+export const Route = createFileRoute("/_authenticated/reports")({
   head: () => ({ meta: [{ title: "Reports · CORTA WMS" }] }),
   component: ReportsPage,
 });

@@ -15,7 +15,7 @@ import {
 } from "@/lib/wms-data";
 import { StatusPill } from "@/components/status-pill";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated")({
   head: () => ({
     meta: [
       { title: "Control Center · CORTA WMS" },

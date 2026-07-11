@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Save } from "lucide-react";
 import { PageHeader } from "@/components/status-pill";
 
-export const Route = createFileRoute("/settings")({
+export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings · CORTA WMS" }] }),
   component: SettingsPage,
 });

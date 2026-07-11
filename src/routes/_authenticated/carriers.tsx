@@ -3,7 +3,7 @@ import { Truck, Plus, Check } from "lucide-react";
 import { carriers } from "@/lib/wms-data";
 import { PageHeader, Stat } from "@/components/status-pill";
 
-export const Route = createFileRoute("/carriers")({
+export const Route = createFileRoute("/_authenticated/carriers")({
   head: () => ({ meta: [{ title: "Carriers · CORTA WMS" }] }),
   component: CarriersPage,
 });

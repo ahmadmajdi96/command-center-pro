@@ -3,7 +3,7 @@ import { Wrench, RefreshCw, AlertTriangle } from "lucide-react";
 import { integrations, maintenanceEvents } from "@/lib/wms-data";
 import { PageHeader, Stat } from "@/components/status-pill";
 
-export const Route = createFileRoute("/integrations/cmms")({
+export const Route = createFileRoute("/_authenticated/integrations/cmms")({
   head: () => ({ meta: [{ title: "CMMS Integration · CORTA WMS" }] }),
   component: CmmsPage,
 });

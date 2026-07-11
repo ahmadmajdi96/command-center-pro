@@ -3,7 +3,7 @@ import { ShoppingCart, RefreshCw } from "lucide-react";
 import { integrations, salesOrders } from "@/lib/wms-data";
 import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
 
-export const Route = createFileRoute("/integrations/oms")({
+export const Route = createFileRoute("/_authenticated/integrations/oms")({
   head: () => ({ meta: [{ title: "OMS Integration · CORTA WMS" }] }),
   component: OmsPage,
 });

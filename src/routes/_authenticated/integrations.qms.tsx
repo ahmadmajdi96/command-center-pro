@@ -3,7 +3,7 @@ import { ShieldCheck, RefreshCw } from "lucide-react";
 import { integrations, qualityHolds } from "@/lib/wms-data";
 import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
 
-export const Route = createFileRoute("/integrations/qms")({
+export const Route = createFileRoute("/_authenticated/integrations/qms")({
   head: () => ({ meta: [{ title: "QMS Integration · CORTA WMS" }] }),
   component: QmsPage,
 });

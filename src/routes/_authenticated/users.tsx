@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 import { users } from "@/lib/wms-data";
 import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
 
-export const Route = createFileRoute("/users")({
+export const Route = createFileRoute("/_authenticated/users")({
   head: () => ({ meta: [{ title: "Users & Roles · CORTA WMS" }] }),
   component: UsersPage,
 });

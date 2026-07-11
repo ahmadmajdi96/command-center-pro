@@ -3,7 +3,7 @@ import { History, Download } from "lucide-react";
 import { auditLog } from "@/lib/wms-data";
 import { PageHeader, Stat } from "@/components/status-pill";
 
-export const Route = createFileRoute("/audit")({
+export const Route = createFileRoute("/_authenticated/audit")({
   head: () => ({ meta: [{ title: "Audit Log · CORTA WMS" }] }),
   component: AuditPage,
 });

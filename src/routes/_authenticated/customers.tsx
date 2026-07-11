@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 import { customers } from "@/lib/wms-data";
 import { PageHeader, Stat } from "@/components/status-pill";
 
-export const Route = createFileRoute("/customers")({
+export const Route = createFileRoute("/_authenticated/customers")({
   head: () => ({ meta: [{ title: "Customers · CORTA WMS" }] }),
   component: CustomersPage,
 });

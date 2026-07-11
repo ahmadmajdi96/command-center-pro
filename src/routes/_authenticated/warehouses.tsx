@@ -3,7 +3,7 @@ import { Warehouse, MapPin, Plus } from "lucide-react";
 import { warehouses, zones } from "@/lib/wms-data";
 import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
 
-export const Route = createFileRoute("/warehouses")({
+export const Route = createFileRoute("/_authenticated/warehouses")({
   head: () => ({ meta: [{ title: "Warehouses · CORTA WMS" }] }),
   component: WarehousesPage,
 });

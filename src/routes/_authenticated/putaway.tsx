@@ -3,7 +3,7 @@ import { PackageCheck, ArrowRight, Play } from "lucide-react";
 import { receipts } from "@/lib/wms-data";
 import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
 
-export const Route = createFileRoute("/putaway")({
+export const Route = createFileRoute("/_authenticated/putaway")({
   head: () => ({ meta: [{ title: "Putaway · CORTA WMS" }] }),
   component: PutawayPage,
 });

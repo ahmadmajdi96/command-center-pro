@@ -3,7 +3,7 @@ import { Factory, RefreshCw } from "lucide-react";
 import { integrations, mesEvents } from "@/lib/wms-data";
 import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
 
-export const Route = createFileRoute("/integrations/mes")({
+export const Route = createFileRoute("/_authenticated/integrations/mes")({
   head: () => ({ meta: [{ title: "MES Integration · CORTA WMS" }] }),
   component: MesPage,
 });
