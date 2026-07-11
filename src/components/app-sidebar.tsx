@@ -84,37 +84,50 @@ const platform = [
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
-type Item = { title: string; url: string; icon: React.ComponentType<{ className?: string }>; exact?: boolean };
+type Item = { title: string; url: string; icon: React.ComponentType<{ className?: string }>; exact?: boolean; roles?: string[] };
+
+import { useAuth } from "@/hooks/use-auth";
 
 export function AppSidebar() {
   const path = useRouterState({ select: (r) => r.location.pathname });
+  const { roles, isAdmin } = useAuth();
   const isActive = (item: Item) => (item.exact ? path === item.url : path === item.url || path.startsWith(item.url + "/"));
+  const visible = (items: Item[]) => items.filter((i) => !i.roles || isAdmin || i.roles.some((r) => roles.includes(r as any)));
 
-  const renderGroup = (label: string, items: Item[]) => (
-    <SidebarGroup>
-      <SidebarGroupLabel className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground/70">
-        {label}
-      </SidebarGroupLabel>
-      <SidebarGroupContent>
-        <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.url}>
-              <SidebarMenuButton
-                asChild
-                isActive={isActive(item)}
-                className="data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:border data-[active=true]:border-primary/30 rounded-lg h-9"
-              >
-                <Link to={item.url} className="flex items-center gap-3">
-                  <item.icon className="h-4 w-4 shrink-0" />
-                  <span className="truncate">{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
-  );
+  // Role gating: platform routes are admin-only; quality is quality/admin/manager; MES/CMMS are maintenance/manager/admin
+  const platformGated: Item[] = platform.map((p) => ({ ...p, roles: ["admin"] }));
+  const controlGated: Item[] = control.map((p) => ({ ...p, roles: ["admin", "manager", "quality"] }));
+  const integrationsGated: Item[] = integrations.map((p) => ({ ...p, roles: ["admin", "manager", "supervisor", "maintenance", "quality"] }));
+
+  const renderGroup = (label: string, items: Item[]) => {
+    const vis = visible(items);
+    if (vis.length === 0) return null;
+    return (
+      <SidebarGroup>
+        <SidebarGroupLabel className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground/70">
+          {label}
+        </SidebarGroupLabel>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            {vis.map((item) => (
+              <SidebarMenuItem key={item.url}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive(item)}
+                  className="data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:border data-[active=true]:border-primary/30 rounded-lg h-9"
+                >
+                  <Link to={item.url} className="flex items-center gap-3">
+                    <item.icon className="h-4 w-4 shrink-0" />
+                    <span className="truncate">{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    );
+  };
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
@@ -136,9 +149,9 @@ export function AppSidebar() {
         {renderGroup("Inventory", inventory)}
         {renderGroup("Inbound", inbound)}
         {renderGroup("Outbound", outbound)}
-        {renderGroup("Control", control)}
-        {renderGroup("Integrations", integrations)}
-        {renderGroup("Platform", platform)}
+        {renderGroup("Control", controlGated)}
+        {renderGroup("Integrations", integrationsGated)}
+        {renderGroup("Platform", platformGated)}
       </SidebarContent>
       <SidebarFooter className="p-3">
         <div className="rounded-xl border border-border/60 bg-card/60 p-3 group-data-[collapsible=icon]:hidden">
@@ -146,10 +159,10 @@ export function AppSidebar() {
             <span className="status-dot animate-pulse-glow text-success" />
             <span className="font-medium">All systems nominal</span>
           </div>
-          <p className="mt-1 text-[10px] text-muted-foreground">5 warehouses · 3,580 locations</p>
+          <p className="mt-1 text-[10px] text-muted-foreground">Live · RLS-secured backend</p>
           <div className="mt-2 flex items-center gap-1 text-[10px] text-muted-foreground">
             <Cable className="h-3 w-3" />
-            <span>MES · QMS · OMS live</span>
+            <span>MES · QMS · OMS · CMMS</span>
           </div>
         </div>
       </SidebarFooter>
