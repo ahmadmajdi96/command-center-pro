@@ -1,87 +1,110 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
-import { users } from "@/lib/wms-data";
+import { useEffect, useState } from "react";
+import { Loader2, ShieldAlert } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
+import { useAuth, type AppRole } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated/users")({
   head: () => ({ meta: [{ title: "Users & Roles · CORTA WMS" }] }),
   component: UsersPage,
 });
 
-const roles = [
-  { name: "Warehouse Manager", scope: "All warehouses", perms: 42, users: 1 },
-  { name: "Supervisor", scope: "Assigned warehouse", perms: 34, users: 1 },
-  { name: "Operator", scope: "Assigned zone", perms: 18, users: 2 },
-  { name: "Quality Inspector", scope: "QA zones", perms: 22, users: 1 },
-  { name: "Maintenance", scope: "Asset scope", perms: 14, users: 1 },
-  { name: "Administrator", scope: "System-wide", perms: 88, users: 1 },
-];
+const ALL_ROLES: AppRole[] = ["admin", "manager", "supervisor", "operator", "quality", "maintenance"];
+
+type ProfileRow = { id: string; email: string | null; full_name: string | null };
+type RoleRow = { user_id: string; role: AppRole };
 
 function UsersPage() {
+  const { isAdmin, loading: authLoading } = useAuth();
+  const [profiles, setProfiles] = useState<ProfileRow[]>([]);
+  const [roles, setRoles] = useState<RoleRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  async function load() {
+    setLoading(true);
+    const [p, r] = await Promise.all([
+      supabase.from("profiles").select("id,email,full_name"),
+      supabase.from("user_roles").select("user_id,role"),
+    ]);
+    setProfiles((p.data ?? []) as any);
+    setRoles((r.data ?? []) as any);
+    setLoading(false);
+  }
+  useEffect(() => { load(); }, []);
+
+  async function toggle(userId: string, role: AppRole, on: boolean) {
+    if (on) {
+      const { error } = await supabase.from("user_roles").insert({ user_id: userId, role });
+      if (error) return toast.error(error.message);
+    } else {
+      const { error } = await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", role);
+      if (error) return toast.error(error.message);
+    }
+    toast.success("Role updated"); load();
+  }
+
+  if (authLoading) return <div className="p-10 text-center"><Loader2 className="mx-auto h-4 w-4 animate-spin" /></div>;
+  if (!isAdmin) return (
+    <div className="glass-panel rounded-2xl p-10 text-center">
+      <ShieldAlert className="mx-auto h-10 w-10 text-warning" />
+      <h2 className="mt-3 text-lg font-semibold">Administrator access required</h2>
+      <p className="mt-1 text-sm text-muted-foreground">Only Administrators can manage users and role assignments.</p>
+    </div>
+  );
+
+  const rolesFor = (uid: string) => roles.filter((r) => r.user_id === uid).map((r) => r.role);
+
   return (
     <div>
-      <PageHeader
-        title="Users & Roles"
-        subtitle="System users and permission profiles · Admin only"
-        actions={
-          <button className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground">
-            <Plus className="h-3.5 w-3.5" /> New user
-          </button>
-        }
-      />
+      <PageHeader title="Users & Roles" subtitle="Manage authentication and role-based permissions" />
       <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="Users" value={users.length} />
-        <Stat label="Active" value={users.filter(u => u.active).length} tone="success" />
-        <Stat label="Roles" value={roles.length} tone="info" />
-        <Stat label="Logged in (24h)" value={users.length - 1} tone="accent" />
+        <Stat label="Users" value={profiles.length} tone="primary" />
+        <Stat label="Admins" value={roles.filter(r => r.role === "admin").length} tone="destructive" />
+        <Stat label="Managers" value={roles.filter(r => r.role === "manager").length} tone="warning" />
+        <Stat label="Operators" value={roles.filter(r => r.role === "operator").length} tone="info" />
       </div>
-
-      <div className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {roles.map((r) => (
-          <div key={r.name} className="glass-panel rounded-2xl p-4">
-            <div className="text-sm font-semibold">{r.name}</div>
-            <p className="mt-1 text-[11px] text-muted-foreground">{r.scope}</p>
-            <div className="mt-3 grid grid-cols-2 gap-2 text-center">
-              <div className="rounded-lg border border-border/60 bg-card/40 p-2">
-                <div className="font-mono text-lg">{r.perms}</div>
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Permissions</div>
-              </div>
-              <div className="rounded-lg border border-border/60 bg-card/40 p-2">
-                <div className="font-mono text-lg">{r.users}</div>
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Users</div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
       <div className="glass-panel rounded-2xl p-4">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left text-[10px] uppercase tracking-wider text-muted-foreground">
-              <th className="py-2 pr-3">ID</th>
-              <th className="py-2 pr-3">Name</th>
-              <th className="py-2 pr-3">Email</th>
-              <th className="py-2 pr-3">Role</th>
-              <th className="py-2 pr-3">Warehouse</th>
-              <th className="py-2 pr-3">Last login</th>
-              <th className="py-2 pr-3 text-right">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((u) => (
-              <tr key={u.id} className="border-t border-border/40">
-                <td className="py-2.5 pr-3 font-mono text-xs text-primary">{u.id}</td>
-                <td className="py-2.5 pr-3 text-xs">{u.name}</td>
-                <td className="py-2.5 pr-3 text-[11px] text-muted-foreground">{u.email}</td>
-                <td className="py-2.5 pr-3 text-xs">{u.role}</td>
-                <td className="py-2.5 pr-3 font-mono text-[11px]">{u.warehouse}</td>
-                <td className="py-2.5 pr-3 text-[11px] text-muted-foreground">{u.lastLogin}</td>
-                <td className="py-2.5 pr-3 text-right"><StatusPill status={u.active ? "active" : "inactive"} /></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {loading ? <div className="p-6 text-center"><Loader2 className="mx-auto h-4 w-4 animate-spin" /></div> : (
+          <table className="w-full text-sm">
+            <thead><tr className="text-left text-[10px] uppercase tracking-wider text-muted-foreground">
+              <th className="py-2 pr-3">Name</th><th className="py-2 pr-3">Email</th>
+              <th className="py-2 pr-3">Current roles</th>
+              <th className="py-2 pr-3 text-right">Manage roles</th>
+            </tr></thead>
+            <tbody>
+              {profiles.map((p) => {
+                const has = rolesFor(p.id);
+                return (
+                  <tr key={p.id} className="border-t border-border/40">
+                    <td className="py-2.5 pr-3 text-xs">{p.full_name ?? "—"}</td>
+                    <td className="py-2.5 pr-3 text-[11px] text-muted-foreground">{p.email}</td>
+                    <td className="py-2.5 pr-3">
+                      <div className="flex flex-wrap gap-1">
+                        {has.length === 0 && <span className="text-[10px] text-muted-foreground">none</span>}
+                        {has.map((r) => <StatusPill key={r} status={r.toUpperCase()} />)}
+                      </div>
+                    </td>
+                    <td className="py-2.5 pr-3">
+                      <div className="flex flex-wrap justify-end gap-1">
+                        {ALL_ROLES.map((r) => {
+                          const on = has.includes(r);
+                          return (
+                            <button key={r} onClick={() => toggle(p.id, r, !on)}
+                              className={`text-[10px] px-2 py-0.5 rounded border transition ${on ? "bg-primary/20 border-primary/40 text-primary" : "border-border/60 text-muted-foreground hover:text-foreground"}`}>
+                              {r}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
