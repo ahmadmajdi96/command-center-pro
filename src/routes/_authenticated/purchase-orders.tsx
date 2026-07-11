@@ -59,6 +59,23 @@ function POPage() {
         <Stat label="Value" value={`$${rows.reduce((s, r) => s + Number(r.total_value || 0), 0).toLocaleString()}`} tone="accent" />
       </div>
       <div className="glass-panel rounded-2xl p-4">
+        <TableToolbar
+          q={q} onQ={setQ} placeholder="Search PO#, supplier, warehouse…"
+          filterValue={statusFilter} onFilter={setStatusFilter}
+          filterOptions={["draft","open","receiving","closed","cancelled"]} filterLabel="All statuses"
+          exportName="purchase_orders"
+          exportColumns={[
+            { key: "po_number", label: "PO#" }, { key: "supplier", label: "Supplier" }, { key: "warehouse", label: "Warehouse" },
+            { key: "expected_at", label: "Expected" }, { key: "total_value", label: "Value" }, { key: "status", label: "Status" },
+          ]}
+          exportRows={rows
+            .filter((r) => {
+              const s = q.toLowerCase();
+              const mq = !q || r.po_number.toLowerCase().includes(s) || (r.suppliers?.name ?? "").toLowerCase().includes(s) || (r.warehouses?.code ?? "").toLowerCase().includes(s);
+              return mq && (!statusFilter || r.status === statusFilter);
+            })
+            .map((r) => ({ po_number: r.po_number, supplier: r.suppliers?.name ?? "", warehouse: r.warehouses?.code ?? "", expected_at: r.expected_at ?? "", total_value: r.total_value, status: r.status }))}
+        />
         {loading ? <div className="p-6 text-center"><Loader2 className="mx-auto h-4 w-4 animate-spin" /></div>
         : rows.length === 0 ? <div className="p-10 text-center text-sm text-muted-foreground"><ClipboardList className="mx-auto h-8 w-8 mb-2" />No purchase orders yet.</div>
         : (
@@ -68,7 +85,13 @@ function POPage() {
               <th className="py-2 pr-3">Warehouse</th><th className="py-2 pr-3">Expected</th>
               <th className="py-2 pr-3 text-right">Value</th><th className="py-2 pr-3 text-right">Status</th>
               <th></th></tr></thead>
-            <tbody>{rows.map((r) => (
+            <tbody>{rows
+              .filter((r) => {
+                const s = q.toLowerCase();
+                const mq = !q || r.po_number.toLowerCase().includes(s) || (r.suppliers?.name ?? "").toLowerCase().includes(s) || (r.warehouses?.code ?? "").toLowerCase().includes(s);
+                return mq && (!statusFilter || r.status === statusFilter);
+              })
+              .map((r) => (
               <tr key={r.id} className="border-t border-border/40">
                 <td className="py-2.5 pr-3 font-mono text-xs text-primary">{r.po_number}</td>
                 <td className="py-2.5 pr-3 text-xs">{r.suppliers?.name ?? "—"}</td>
