@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Plus, Search, Trash2, Loader2, Package } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Plus, Trash2, Loader2, Package } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Stat } from "@/components/status-pill";
 import { useAuth } from "@/hooks/use-auth";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { TableToolbar } from "@/components/table-toolbar";
 
 export const Route = createFileRoute("/_authenticated/products")({
   head: () => ({ meta: [{ title: "Products · CORTA WMS" }] }),
