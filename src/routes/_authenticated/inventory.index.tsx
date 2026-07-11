@@ -4,7 +4,7 @@ import { Filter, Plus, Repeat, Download } from "lucide-react";
 import { inventory, plantKpis, warehouses } from "@/lib/wms-data";
 import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
 
-export const Route = createFileRoute("/_authenticated/inventory/index")({
+export const Route = createFileRoute("/_authenticated/inventory/")({
   head: () => ({ meta: [{ title: "Stock Overview · CORTA WMS" }] }),
   component: InventoryPage,
 });
