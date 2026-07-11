@@ -22,6 +22,8 @@ function UsersPage() {
   const [profiles, setProfiles] = useState<ProfileRow[]>([]);
   const [roles, setRoles] = useState<RoleRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [q, setQ] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
 
   async function load() {
     setLoading(true);
