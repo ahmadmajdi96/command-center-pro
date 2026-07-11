@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Stat } from "@/components/status-pill";
 import { useAuth } from "@/hooks/use-auth";
+import { TableToolbar } from "@/components/table-toolbar";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,
 } from "@/components/ui/dialog";
