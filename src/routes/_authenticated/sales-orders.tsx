@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
 import { useAuth } from "@/hooks/use-auth";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { TableToolbar } from "@/components/table-toolbar";
 
 export const Route = createFileRoute("/_authenticated/sales-orders")({
   head: () => ({ meta: [{ title: "Sales Orders · CORTA WMS" }] }),
@@ -20,6 +21,8 @@ function SOPage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   async function load() {
     setLoading(true);
@@ -55,6 +58,23 @@ function SOPage() {
         <Stat label="Value" value={`$${rows.reduce((s, r) => s + Number(r.total_value || 0), 0).toLocaleString()}`} tone="accent" />
       </div>
       <div className="glass-panel rounded-2xl p-4">
+        <TableToolbar
+          q={q} onQ={setQ} placeholder="Search SO#, customer, warehouse…"
+          filterValue={statusFilter} onFilter={setStatusFilter}
+          filterOptions={["new","allocated","picking","packing","shipped","cancelled"]} filterLabel="All statuses"
+          exportName="sales_orders"
+          exportColumns={[
+            { key: "so_number", label: "SO#" }, { key: "customer", label: "Customer" }, { key: "warehouse", label: "Warehouse" },
+            { key: "requested_at", label: "Requested" }, { key: "total_value", label: "Value" }, { key: "status", label: "Status" },
+          ]}
+          exportRows={rows
+            .filter((r) => {
+              const s = q.toLowerCase();
+              const mq = !q || r.so_number.toLowerCase().includes(s) || (r.customers?.name ?? "").toLowerCase().includes(s) || (r.warehouses?.code ?? "").toLowerCase().includes(s);
+              return mq && (!statusFilter || r.status === statusFilter);
+            })
+            .map((r) => ({ so_number: r.so_number, customer: r.customers?.name ?? "", warehouse: r.warehouses?.code ?? "", requested_at: r.requested_at ?? "", total_value: r.total_value, status: r.status }))}
+        />
         {loading ? <div className="p-6 text-center"><Loader2 className="mx-auto h-4 w-4 animate-spin" /></div>
         : rows.length === 0 ? <div className="p-10 text-center text-sm text-muted-foreground"><ShoppingCart className="mx-auto h-8 w-8 mb-2" />No sales orders yet.</div>
         : (
@@ -63,7 +83,13 @@ function SOPage() {
               <th className="py-2 pr-3">SO#</th><th className="py-2 pr-3">Customer</th>
               <th className="py-2 pr-3">Warehouse</th><th className="py-2 pr-3">Requested</th>
               <th className="py-2 pr-3 text-right">Value</th><th className="py-2 pr-3 text-right">Status</th><th></th></tr></thead>
-            <tbody>{rows.map((r) => (
+            <tbody>{rows
+              .filter((r) => {
+                const s = q.toLowerCase();
+                const mq = !q || r.so_number.toLowerCase().includes(s) || (r.customers?.name ?? "").toLowerCase().includes(s) || (r.warehouses?.code ?? "").toLowerCase().includes(s);
+                return mq && (!statusFilter || r.status === statusFilter);
+              })
+              .map((r) => (
               <tr key={r.id} className="border-t border-border/40">
                 <td className="py-2.5 pr-3 font-mono text-xs text-primary">{r.so_number}</td>
                 <td className="py-2.5 pr-3 text-xs">{r.customers?.name ?? "—"}</td>

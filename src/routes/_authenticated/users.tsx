@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
 import { useAuth, type AppRole } from "@/hooks/use-auth";
+import { TableToolbar } from "@/components/table-toolbar";
 
 export const Route = createFileRoute("/_authenticated/users")({
   head: () => ({ meta: [{ title: "Users & Roles · CORTA WMS" }] }),
@@ -21,6 +22,8 @@ function UsersPage() {
   const [profiles, setProfiles] = useState<ProfileRow[]>([]);
   const [roles, setRoles] = useState<RoleRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [q, setQ] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
 
   async function load() {
     setLoading(true);
@@ -66,6 +69,22 @@ function UsersPage() {
         <Stat label="Operators" value={roles.filter(r => r.role === "operator").length} tone="info" />
       </div>
       <div className="glass-panel rounded-2xl p-4">
+        <TableToolbar
+          q={q} onQ={setQ} placeholder="Search name or email…"
+          filterValue={roleFilter} onFilter={setRoleFilter}
+          filterOptions={ALL_ROLES} filterLabel="All roles"
+          exportName="users"
+          exportColumns={[{ key: "full_name", label: "Name" }, { key: "email", label: "Email" }, { key: "roles", label: "Roles" }]}
+          exportRows={profiles
+            .filter((p) => {
+              const s = q.toLowerCase();
+              const rr = rolesFor(p.id);
+              const mq = !q || (p.full_name ?? "").toLowerCase().includes(s) || (p.email ?? "").toLowerCase().includes(s);
+              const mr = !roleFilter || rr.includes(roleFilter as AppRole);
+              return mq && mr;
+            })
+            .map((p) => ({ full_name: p.full_name ?? "", email: p.email ?? "", roles: rolesFor(p.id).join("|") }))}
+        />
         {loading ? <div className="p-6 text-center"><Loader2 className="mx-auto h-4 w-4 animate-spin" /></div> : (
           <table className="w-full text-sm">
             <thead><tr className="text-left text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -74,7 +93,15 @@ function UsersPage() {
               <th className="py-2 pr-3 text-right">Manage roles</th>
             </tr></thead>
             <tbody>
-              {profiles.map((p) => {
+              {profiles
+                .filter((p) => {
+                  const s = q.toLowerCase();
+                  const rr = rolesFor(p.id);
+                  const mq = !q || (p.full_name ?? "").toLowerCase().includes(s) || (p.email ?? "").toLowerCase().includes(s);
+                  const mr = !roleFilter || rr.includes(roleFilter as AppRole);
+                  return mq && mr;
+                })
+                .map((p) => {
                 const has = rolesFor(p.id);
                 return (
                   <tr key={p.id} className="border-t border-border/40">

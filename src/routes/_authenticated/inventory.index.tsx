@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
 import { useAuth } from "@/hooks/use-auth";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { TableToolbar } from "@/components/table-toolbar";
 
 export const Route = createFileRoute("/_authenticated/inventory/")({
   head: () => ({ meta: [{ title: "Inventory · CORTA WMS" }] }),
@@ -24,6 +25,8 @@ function InventoryPage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   async function load() {
     setLoading(true);
@@ -37,6 +40,16 @@ function InventoryPage() {
   useEffect(() => { load(); }, []);
 
   const totalUnits = rows.reduce((s, r) => s + Number(r.qty || 0), 0);
+  const filtered = rows.filter((r) => {
+    const s = q.toLowerCase();
+    const matchQ = !q || (r.products?.sku ?? "").toLowerCase().includes(s) || (r.products?.name ?? "").toLowerCase().includes(s) || (r.lot ?? "").toLowerCase().includes(s) || (r.warehouses?.code ?? "").toLowerCase().includes(s) || (r.bins?.code ?? "").toLowerCase().includes(s);
+    const matchS = !statusFilter || r.status === statusFilter;
+    return matchQ && matchS;
+  });
+  const exportRows = filtered.map((r) => ({
+    sku: r.products?.sku ?? "", name: r.products?.name ?? "", warehouse: r.warehouses?.code ?? "",
+    bin: r.bins?.code ?? "", lot: r.lot ?? "", expiry: r.expiry ?? "", qty: r.qty, uom: r.products?.uom ?? "", status: r.status,
+  }));
 
   return (
     <div>
@@ -60,10 +73,23 @@ function InventoryPage() {
       </div>
 
       <div className="glass-panel rounded-2xl p-4">
+        <TableToolbar
+          q={q} onQ={setQ} placeholder="Search SKU, lot, bin, warehouse…"
+          filterValue={statusFilter} onFilter={setStatusFilter}
+          filterOptions={["available", "reserved", "quality_hold", "damaged"]}
+          filterLabel="All statuses"
+          exportName="inventory"
+          exportColumns={[
+            { key: "sku", label: "SKU" }, { key: "name", label: "Name" }, { key: "warehouse", label: "Warehouse" },
+            { key: "bin", label: "Bin" }, { key: "lot", label: "Lot" }, { key: "expiry", label: "Expiry" },
+            { key: "qty", label: "Qty" }, { key: "uom", label: "UoM" }, { key: "status", label: "Status" },
+          ]}
+          exportRows={exportRows}
+        />
         {loading ? <div className="p-6 text-center"><Loader2 className="mx-auto h-4 w-4 animate-spin" /></div>
-        : rows.length === 0 ? (
+        : filtered.length === 0 ? (
           <div className="p-10 text-center text-sm text-muted-foreground">
-            <Boxes className="mx-auto h-8 w-8 mb-2" />No inventory yet. Create products, then add stock lines.
+            <Boxes className="mx-auto h-8 w-8 mb-2" />{rows.length === 0 ? "No inventory yet. Create products, then add stock lines." : "No matches."}
           </div>
         ) : (
           <table className="w-full text-sm">
@@ -76,7 +102,7 @@ function InventoryPage() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((r) => (
+              {filtered.map((r) => (
                 <tr key={r.id} className="border-t border-border/40">
                   <td className="py-2.5 pr-3 font-mono text-xs text-primary">{r.products?.sku}</td>
                   <td className="py-2.5 pr-3 text-xs">{r.products?.name}</td>

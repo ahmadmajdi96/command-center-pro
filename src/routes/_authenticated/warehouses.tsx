@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Stat } from "@/components/status-pill";
 import { useAuth } from "@/hooks/use-auth";
+import { TableToolbar } from "@/components/table-toolbar";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,
 } from "@/components/ui/dialog";
@@ -25,6 +26,8 @@ function WarehousesPage() {
   const [rows, setRows] = useState<WH[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   async function load() {
     setLoading(true);
@@ -66,6 +69,25 @@ function WarehousesPage() {
         <Stat label="Countries" value={new Set(rows.map(r => r.country)).size} tone="accent" />
       </div>
 
+      <div className="glass-panel rounded-2xl p-3 mb-3">
+        <TableToolbar
+          q={q} onQ={setQ} placeholder="Search code, name, city, country…"
+          filterValue={statusFilter} onFilter={setStatusFilter}
+          filterOptions={["active", "inactive", "maintenance"]} filterLabel="All statuses"
+          exportName="warehouses"
+          exportColumns={[
+            { key: "code", label: "Code" }, { key: "name", label: "Name" }, { key: "city", label: "City" },
+            { key: "country", label: "Country" }, { key: "timezone", label: "TZ" },
+            { key: "width_m", label: "Width" }, { key: "length_m", label: "Length" }, { key: "status", label: "Status" },
+          ]}
+          exportRows={rows.filter((r) => {
+            const s = q.toLowerCase();
+            const mq = !q || r.code.toLowerCase().includes(s) || r.name.toLowerCase().includes(s) || (r.city ?? "").toLowerCase().includes(s) || (r.country ?? "").toLowerCase().includes(s);
+            return mq && (!statusFilter || r.status === statusFilter);
+          }) as unknown as Record<string, unknown>[]}
+        />
+      </div>
+
       {loading ? (
         <div className="glass-panel rounded-2xl p-10 text-center text-sm text-muted-foreground">
           <Loader2 className="mx-auto h-5 w-5 animate-spin" /> Loading…
@@ -78,7 +100,11 @@ function WarehousesPage() {
         </div>
       ) : (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {rows.map((w) => (
+          {rows.filter((w) => {
+            const s = q.toLowerCase();
+            const mq = !q || w.code.toLowerCase().includes(s) || w.name.toLowerCase().includes(s) || (w.city ?? "").toLowerCase().includes(s) || (w.country ?? "").toLowerCase().includes(s);
+            return mq && (!statusFilter || w.status === statusFilter);
+          }).map((w) => (
             <Link key={w.id} to="/warehouses/$id" params={{ id: w.id }}
               className="glass-panel group rounded-2xl p-4 hover:border-primary/40 transition">
               <div className="flex items-start justify-between">
