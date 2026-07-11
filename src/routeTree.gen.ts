@@ -37,6 +37,10 @@ import { Route as AuthenticatedIntegrationsQmsRouteImport } from './routes/_auth
 import { Route as AuthenticatedIntegrationsOmsRouteImport } from './routes/_authenticated/integrations.oms'
 import { Route as AuthenticatedIntegrationsMesRouteImport } from './routes/_authenticated/integrations.mes'
 import { Route as AuthenticatedIntegrationsCmmsRouteImport } from './routes/_authenticated/integrations.cmms'
+import { Route as ApiPublicWmsOrdersRouteImport } from './routes/api/public/wms/orders'
+import { Route as ApiPublicWmsInventoryRouteImport } from './routes/api/public/wms/inventory'
+import { Route as ApiPublicWmsWebhooksQcRouteImport } from './routes/api/public/wms/webhooks/qc'
+import { Route as ApiPublicWmsWebhooksCcRouteImport } from './routes/api/public/wms/webhooks/cc'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -187,6 +191,26 @@ const AuthenticatedIntegrationsCmmsRoute =
     path: '/integrations/cmms',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicWmsOrdersRoute = ApiPublicWmsOrdersRouteImport.update({
+  id: '/api/public/wms/orders',
+  path: '/api/public/wms/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicWmsInventoryRoute = ApiPublicWmsInventoryRouteImport.update({
+  id: '/api/public/wms/inventory',
+  path: '/api/public/wms/inventory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicWmsWebhooksQcRoute = ApiPublicWmsWebhooksQcRouteImport.update({
+  id: '/api/public/wms/webhooks/qc',
+  path: '/api/public/wms/webhooks/qc',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicWmsWebhooksCcRoute = ApiPublicWmsWebhooksCcRouteImport.update({
+  id: '/api/public/wms/webhooks/cc',
+  path: '/api/public/wms/webhooks/cc',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -216,6 +240,10 @@ export interface FileRoutesByFullPath {
   '/inventory/adjustments': typeof AuthenticatedInventoryAdjustmentsRoute
   '/warehouses/$id': typeof AuthenticatedWarehousesIdRoute
   '/inventory/': typeof AuthenticatedInventoryIndexRoute
+  '/api/public/wms/inventory': typeof ApiPublicWmsInventoryRoute
+  '/api/public/wms/orders': typeof ApiPublicWmsOrdersRoute
+  '/api/public/wms/webhooks/cc': typeof ApiPublicWmsWebhooksCcRoute
+  '/api/public/wms/webhooks/qc': typeof ApiPublicWmsWebhooksQcRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
@@ -245,6 +273,10 @@ export interface FileRoutesByTo {
   '/inventory/adjustments': typeof AuthenticatedInventoryAdjustmentsRoute
   '/warehouses/$id': typeof AuthenticatedWarehousesIdRoute
   '/inventory': typeof AuthenticatedInventoryIndexRoute
+  '/api/public/wms/inventory': typeof ApiPublicWmsInventoryRoute
+  '/api/public/wms/orders': typeof ApiPublicWmsOrdersRoute
+  '/api/public/wms/webhooks/cc': typeof ApiPublicWmsWebhooksCcRoute
+  '/api/public/wms/webhooks/qc': typeof ApiPublicWmsWebhooksQcRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -276,6 +308,10 @@ export interface FileRoutesById {
   '/_authenticated/inventory/adjustments': typeof AuthenticatedInventoryAdjustmentsRoute
   '/_authenticated/warehouses/$id': typeof AuthenticatedWarehousesIdRoute
   '/_authenticated/inventory/': typeof AuthenticatedInventoryIndexRoute
+  '/api/public/wms/inventory': typeof ApiPublicWmsInventoryRoute
+  '/api/public/wms/orders': typeof ApiPublicWmsOrdersRoute
+  '/api/public/wms/webhooks/cc': typeof ApiPublicWmsWebhooksCcRoute
+  '/api/public/wms/webhooks/qc': typeof ApiPublicWmsWebhooksQcRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -307,6 +343,10 @@ export interface FileRouteTypes {
     | '/inventory/adjustments'
     | '/warehouses/$id'
     | '/inventory/'
+    | '/api/public/wms/inventory'
+    | '/api/public/wms/orders'
+    | '/api/public/wms/webhooks/cc'
+    | '/api/public/wms/webhooks/qc'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -336,6 +376,10 @@ export interface FileRouteTypes {
     | '/inventory/adjustments'
     | '/warehouses/$id'
     | '/inventory'
+    | '/api/public/wms/inventory'
+    | '/api/public/wms/orders'
+    | '/api/public/wms/webhooks/cc'
+    | '/api/public/wms/webhooks/qc'
   id:
     | '__root__'
     | '/_authenticated'
@@ -366,11 +410,19 @@ export interface FileRouteTypes {
     | '/_authenticated/inventory/adjustments'
     | '/_authenticated/warehouses/$id'
     | '/_authenticated/inventory/'
+    | '/api/public/wms/inventory'
+    | '/api/public/wms/orders'
+    | '/api/public/wms/webhooks/cc'
+    | '/api/public/wms/webhooks/qc'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicWmsInventoryRoute: typeof ApiPublicWmsInventoryRoute
+  ApiPublicWmsOrdersRoute: typeof ApiPublicWmsOrdersRoute
+  ApiPublicWmsWebhooksCcRoute: typeof ApiPublicWmsWebhooksCcRoute
+  ApiPublicWmsWebhooksQcRoute: typeof ApiPublicWmsWebhooksQcRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -571,6 +623,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIntegrationsCmmsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/wms/orders': {
+      id: '/api/public/wms/orders'
+      path: '/api/public/wms/orders'
+      fullPath: '/api/public/wms/orders'
+      preLoaderRoute: typeof ApiPublicWmsOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/wms/inventory': {
+      id: '/api/public/wms/inventory'
+      path: '/api/public/wms/inventory'
+      fullPath: '/api/public/wms/inventory'
+      preLoaderRoute: typeof ApiPublicWmsInventoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/wms/webhooks/qc': {
+      id: '/api/public/wms/webhooks/qc'
+      path: '/api/public/wms/webhooks/qc'
+      fullPath: '/api/public/wms/webhooks/qc'
+      preLoaderRoute: typeof ApiPublicWmsWebhooksQcRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/wms/webhooks/cc': {
+      id: '/api/public/wms/webhooks/cc'
+      path: '/api/public/wms/webhooks/cc'
+      fullPath: '/api/public/wms/webhooks/cc'
+      preLoaderRoute: typeof ApiPublicWmsWebhooksCcRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -651,6 +731,10 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicWmsInventoryRoute: ApiPublicWmsInventoryRoute,
+  ApiPublicWmsOrdersRoute: ApiPublicWmsOrdersRoute,
+  ApiPublicWmsWebhooksCcRoute: ApiPublicWmsWebhooksCcRoute,
+  ApiPublicWmsWebhooksQcRoute: ApiPublicWmsWebhooksQcRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
