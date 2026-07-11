@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
 import { useAuth } from "@/hooks/use-auth";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { TableToolbar } from "@/components/table-toolbar";
 
 export const Route = createFileRoute("/_authenticated/sales-orders")({
   head: () => ({ meta: [{ title: "Sales Orders · CORTA WMS" }] }),
