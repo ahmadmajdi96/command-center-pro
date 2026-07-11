@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
 import { useAuth, type AppRole } from "@/hooks/use-auth";
+import { TableToolbar } from "@/components/table-toolbar";
 
 export const Route = createFileRoute("/_authenticated/users")({
   head: () => ({ meta: [{ title: "Users & Roles · CORTA WMS" }] }),
