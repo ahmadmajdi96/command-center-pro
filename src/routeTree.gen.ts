@@ -31,6 +31,7 @@ import { Route as AuthenticatedCustomersRouteImport } from './routes/_authentica
 import { Route as AuthenticatedCarriersRouteImport } from './routes/_authenticated/carriers'
 import { Route as AuthenticatedAuditRouteImport } from './routes/_authenticated/audit'
 import { Route as AuthenticatedInventoryIndexRouteImport } from './routes/_authenticated/inventory.index'
+import { Route as AuthenticatedWarehousesIdRouteImport } from './routes/_authenticated/warehouses.$id'
 import { Route as AuthenticatedInventoryAdjustmentsRouteImport } from './routes/_authenticated/inventory.adjustments'
 import { Route as AuthenticatedIntegrationsQmsRouteImport } from './routes/_authenticated/integrations.qms'
 import { Route as AuthenticatedIntegrationsOmsRouteImport } from './routes/_authenticated/integrations.oms'
@@ -150,6 +151,12 @@ const AuthenticatedInventoryIndexRoute =
     path: '/inventory/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedWarehousesIdRoute =
+  AuthenticatedWarehousesIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedWarehousesRoute,
+  } as any)
 const AuthenticatedInventoryAdjustmentsRoute =
   AuthenticatedInventoryAdjustmentsRouteImport.update({
     id: '/inventory/adjustments',
@@ -201,12 +208,13 @@ export interface FileRoutesByFullPath {
   '/shipments': typeof AuthenticatedShipmentsRoute
   '/suppliers': typeof AuthenticatedSuppliersRoute
   '/users': typeof AuthenticatedUsersRoute
-  '/warehouses': typeof AuthenticatedWarehousesRoute
+  '/warehouses': typeof AuthenticatedWarehousesRouteWithChildren
   '/integrations/cmms': typeof AuthenticatedIntegrationsCmmsRoute
   '/integrations/mes': typeof AuthenticatedIntegrationsMesRoute
   '/integrations/oms': typeof AuthenticatedIntegrationsOmsRoute
   '/integrations/qms': typeof AuthenticatedIntegrationsQmsRoute
   '/inventory/adjustments': typeof AuthenticatedInventoryAdjustmentsRoute
+  '/warehouses/$id': typeof AuthenticatedWarehousesIdRoute
   '/inventory/': typeof AuthenticatedInventoryIndexRoute
 }
 export interface FileRoutesByTo {
@@ -228,13 +236,14 @@ export interface FileRoutesByTo {
   '/shipments': typeof AuthenticatedShipmentsRoute
   '/suppliers': typeof AuthenticatedSuppliersRoute
   '/users': typeof AuthenticatedUsersRoute
-  '/warehouses': typeof AuthenticatedWarehousesRoute
+  '/warehouses': typeof AuthenticatedWarehousesRouteWithChildren
   '/': typeof AuthenticatedIndexRoute
   '/integrations/cmms': typeof AuthenticatedIntegrationsCmmsRoute
   '/integrations/mes': typeof AuthenticatedIntegrationsMesRoute
   '/integrations/oms': typeof AuthenticatedIntegrationsOmsRoute
   '/integrations/qms': typeof AuthenticatedIntegrationsQmsRoute
   '/inventory/adjustments': typeof AuthenticatedInventoryAdjustmentsRoute
+  '/warehouses/$id': typeof AuthenticatedWarehousesIdRoute
   '/inventory': typeof AuthenticatedInventoryIndexRoute
 }
 export interface FileRoutesById {
@@ -258,13 +267,14 @@ export interface FileRoutesById {
   '/_authenticated/shipments': typeof AuthenticatedShipmentsRoute
   '/_authenticated/suppliers': typeof AuthenticatedSuppliersRoute
   '/_authenticated/users': typeof AuthenticatedUsersRoute
-  '/_authenticated/warehouses': typeof AuthenticatedWarehousesRoute
+  '/_authenticated/warehouses': typeof AuthenticatedWarehousesRouteWithChildren
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/integrations/cmms': typeof AuthenticatedIntegrationsCmmsRoute
   '/_authenticated/integrations/mes': typeof AuthenticatedIntegrationsMesRoute
   '/_authenticated/integrations/oms': typeof AuthenticatedIntegrationsOmsRoute
   '/_authenticated/integrations/qms': typeof AuthenticatedIntegrationsQmsRoute
   '/_authenticated/inventory/adjustments': typeof AuthenticatedInventoryAdjustmentsRoute
+  '/_authenticated/warehouses/$id': typeof AuthenticatedWarehousesIdRoute
   '/_authenticated/inventory/': typeof AuthenticatedInventoryIndexRoute
 }
 export interface FileRouteTypes {
@@ -295,6 +305,7 @@ export interface FileRouteTypes {
     | '/integrations/oms'
     | '/integrations/qms'
     | '/inventory/adjustments'
+    | '/warehouses/$id'
     | '/inventory/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -323,6 +334,7 @@ export interface FileRouteTypes {
     | '/integrations/oms'
     | '/integrations/qms'
     | '/inventory/adjustments'
+    | '/warehouses/$id'
     | '/inventory'
   id:
     | '__root__'
@@ -352,6 +364,7 @@ export interface FileRouteTypes {
     | '/_authenticated/integrations/oms'
     | '/_authenticated/integrations/qms'
     | '/_authenticated/inventory/adjustments'
+    | '/_authenticated/warehouses/$id'
     | '/_authenticated/inventory/'
   fileRoutesById: FileRoutesById
 }
@@ -516,6 +529,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInventoryIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/warehouses/$id': {
+      id: '/_authenticated/warehouses/$id'
+      path: '/$id'
+      fullPath: '/warehouses/$id'
+      preLoaderRoute: typeof AuthenticatedWarehousesIdRouteImport
+      parentRoute: typeof AuthenticatedWarehousesRoute
+    }
     '/_authenticated/inventory/adjustments': {
       id: '/_authenticated/inventory/adjustments'
       path: '/inventory/adjustments'
@@ -554,6 +574,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedWarehousesRouteChildren {
+  AuthenticatedWarehousesIdRoute: typeof AuthenticatedWarehousesIdRoute
+}
+
+const AuthenticatedWarehousesRouteChildren: AuthenticatedWarehousesRouteChildren =
+  {
+    AuthenticatedWarehousesIdRoute: AuthenticatedWarehousesIdRoute,
+  }
+
+const AuthenticatedWarehousesRouteWithChildren =
+  AuthenticatedWarehousesRoute._addFileChildren(
+    AuthenticatedWarehousesRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAuditRoute: typeof AuthenticatedAuditRoute
   AuthenticatedCarriersRoute: typeof AuthenticatedCarriersRoute
@@ -572,7 +606,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedShipmentsRoute: typeof AuthenticatedShipmentsRoute
   AuthenticatedSuppliersRoute: typeof AuthenticatedSuppliersRoute
   AuthenticatedUsersRoute: typeof AuthenticatedUsersRoute
-  AuthenticatedWarehousesRoute: typeof AuthenticatedWarehousesRoute
+  AuthenticatedWarehousesRoute: typeof AuthenticatedWarehousesRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedIntegrationsCmmsRoute: typeof AuthenticatedIntegrationsCmmsRoute
   AuthenticatedIntegrationsMesRoute: typeof AuthenticatedIntegrationsMesRoute
@@ -600,7 +634,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedShipmentsRoute: AuthenticatedShipmentsRoute,
   AuthenticatedSuppliersRoute: AuthenticatedSuppliersRoute,
   AuthenticatedUsersRoute: AuthenticatedUsersRoute,
-  AuthenticatedWarehousesRoute: AuthenticatedWarehousesRoute,
+  AuthenticatedWarehousesRoute: AuthenticatedWarehousesRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedIntegrationsCmmsRoute: AuthenticatedIntegrationsCmmsRoute,
   AuthenticatedIntegrationsMesRoute: AuthenticatedIntegrationsMesRoute,
