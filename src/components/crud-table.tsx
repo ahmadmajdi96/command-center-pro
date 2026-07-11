@@ -60,7 +60,7 @@ export function CrudTable({
 
   async function load() {
     setLoading(true);
-    const { data, error } = await supabase.from(table).select(select).order(order, { ascending });
+    const { data, error } = await (supabase as any).from(table).select(select).order(order, { ascending });
     if (error) toast.error(error.message);
     const rr = (data as unknown as Record<string, unknown>[]) ?? [];
     setRows(transform ? rr.map(transform) : rr);
@@ -71,7 +71,7 @@ export function CrudTable({
     const refFields = fields.filter((f) => f.refTable);
     const entries = await Promise.all(
       refFields.map(async (f) => {
-        const { data } = await supabase.from(f.refTable!).select(`id, ${f.refLabel ?? "name"}`).limit(500);
+        const { data } = await (supabase as any).from(f.refTable!).select(`id, ${f.refLabel ?? "name"}`).limit(500);
         return [
           f.key,
           ((data as unknown as Record<string, unknown>[]) ?? []).map((r) => ({
@@ -200,7 +200,7 @@ export function CrudTable({
                       <button
                         onClick={async () => {
                           if (!confirm("Delete this record?")) return;
-                          const { error } = await supabase.from(table).delete().eq("id", String(r.id));
+                          const { error } = await (supabase as any).from(table).delete().eq("id", String(r.id));
                           if (error) toast.error(error.message);
                           else {
                             toast.success("Deleted");
@@ -256,7 +256,7 @@ function CrudForm({
       }
       payload[f.key] = v;
     }
-    const { error } = await supabase.from(table).insert(payload);
+    const { error } = await (supabase as any).from(table).insert(payload);
     setSaving(false);
     if (error) return toast.error(error.message);
     toast.success("Created");

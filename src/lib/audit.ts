@@ -9,7 +9,7 @@ export async function auditLog(entity: string, action: string, entityId?: string
       entity,
       entity_id: entityId ?? null,
       action,
-      metadata: metadata ?? {},
+      metadata: (metadata ?? {}) as any,
     });
   } catch {
     /* audit is best-effort */
