@@ -52,6 +52,60 @@ export type Database = {
           },
         ]
       }
+      app_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
+      audit_log: {
+        Row: {
+          action: string
+          actor_email: string | null
+          actor_id: string | null
+          created_at: string
+          entity: string
+          entity_id: string | null
+          id: string
+          metadata: Json | null
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          actor_id?: string | null
+          created_at?: string
+          entity: string
+          entity_id?: string | null
+          id?: string
+          metadata?: Json | null
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          actor_id?: string | null
+          created_at?: string
+          entity?: string
+          entity_id?: string | null
+          id?: string
+          metadata?: Json | null
+        }
+        Relationships: []
+      }
       bins: {
         Row: {
           code: string
@@ -87,6 +141,78 @@ export type Database = {
           },
         ]
       }
+      carriers: {
+        Row: {
+          active: boolean
+          code: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          id: string
+          name: string
+          service_level: string | null
+          tracking_url_template: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          code?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          service_level?: string | null
+          tracking_url_template?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          code?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          service_level?: string | null
+          tracking_url_template?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      cc_orders: {
+        Row: {
+          customer: string | null
+          external_id: string | null
+          id: string
+          order_number: string
+          raw: Json | null
+          received_at: string
+          status: string | null
+          total: number | null
+        }
+        Insert: {
+          customer?: string | null
+          external_id?: string | null
+          id?: string
+          order_number: string
+          raw?: Json | null
+          received_at?: string
+          status?: string | null
+          total?: number | null
+        }
+        Update: {
+          customer?: string | null
+          external_id?: string | null
+          id?: string
+          order_number?: string
+          raw?: Json | null
+          received_at?: string
+          status?: string | null
+          total?: number | null
+        }
+        Relationships: []
+      }
       customers: {
         Row: {
           code: string
@@ -114,6 +240,135 @@ export type Database = {
           id?: string
           name?: string
           status?: string | null
+        }
+        Relationships: []
+      }
+      cycle_counts: {
+        Row: {
+          completed_at: string | null
+          counted_by: string | null
+          created_at: string
+          id: string
+          reference: string
+          scheduled_for: string | null
+          status: Database["public"]["Enums"]["doc_status"]
+          updated_at: string
+          variance: number | null
+          warehouse_id: string | null
+          zone_id: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          counted_by?: string | null
+          created_at?: string
+          id?: string
+          reference: string
+          scheduled_for?: string | null
+          status?: Database["public"]["Enums"]["doc_status"]
+          updated_at?: string
+          variance?: number | null
+          warehouse_id?: string | null
+          zone_id?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          counted_by?: string | null
+          created_at?: string
+          id?: string
+          reference?: string
+          scheduled_for?: string | null
+          status?: Database["public"]["Enums"]["doc_status"]
+          updated_at?: string
+          variance?: number | null
+          warehouse_id?: string | null
+          zone_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cycle_counts_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cycle_counts_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      integration_events: {
+        Row: {
+          created_at: string
+          error: string | null
+          event_type: string
+          external_id: string | null
+          id: string
+          payload: Json
+          processed_at: string | null
+          status: string
+          system: Database["public"]["Enums"]["integration_system"]
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          event_type: string
+          external_id?: string | null
+          id?: string
+          payload?: Json
+          processed_at?: string | null
+          status?: string
+          system: Database["public"]["Enums"]["integration_system"]
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          event_type?: string
+          external_id?: string | null
+          id?: string
+          payload?: Json
+          processed_at?: string | null
+          status?: string
+          system?: Database["public"]["Enums"]["integration_system"]
+        }
+        Relationships: []
+      }
+      integration_sync_runs: {
+        Row: {
+          detail: Json | null
+          errors: number | null
+          finished_at: string | null
+          id: string
+          pulled: number | null
+          reconciled: number | null
+          started_at: string
+          status: string
+          system: Database["public"]["Enums"]["integration_system"]
+        }
+        Insert: {
+          detail?: Json | null
+          errors?: number | null
+          finished_at?: string | null
+          id?: string
+          pulled?: number | null
+          reconciled?: number | null
+          started_at?: string
+          status?: string
+          system: Database["public"]["Enums"]["integration_system"]
+        }
+        Update: {
+          detail?: Json | null
+          errors?: number | null
+          finished_at?: string | null
+          id?: string
+          pulled?: number | null
+          reconciled?: number | null
+          started_at?: string
+          status?: string
+          system?: Database["public"]["Enums"]["integration_system"]
         }
         Relationships: []
       }
@@ -168,6 +423,222 @@ export type Database = {
           },
           {
             foreignKeyName: "inventory_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_adjustments: {
+        Row: {
+          bin_id: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          product_id: string | null
+          quantity_delta: number
+          reason: string
+          reference: string
+          status: Database["public"]["Enums"]["doc_status"]
+          updated_at: string
+        }
+        Insert: {
+          bin_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          product_id?: string | null
+          quantity_delta: number
+          reason: string
+          reference: string
+          status?: Database["public"]["Enums"]["doc_status"]
+          updated_at?: string
+        }
+        Update: {
+          bin_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          product_id?: string | null
+          quantity_delta?: number
+          reason?: string
+          reference?: string
+          status?: Database["public"]["Enums"]["doc_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_adjustments_bin_id_fkey"
+            columns: ["bin_id"]
+            isOneToOne: false
+            referencedRelation: "bins"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_adjustments_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      packs: {
+        Row: {
+          created_at: string
+          dimensions: string | null
+          id: string
+          packed_at: string | null
+          reference: string
+          sales_order_id: string | null
+          station: string | null
+          status: Database["public"]["Enums"]["doc_status"]
+          updated_at: string
+          weight_kg: number | null
+        }
+        Insert: {
+          created_at?: string
+          dimensions?: string | null
+          id?: string
+          packed_at?: string | null
+          reference: string
+          sales_order_id?: string | null
+          station?: string | null
+          status?: Database["public"]["Enums"]["doc_status"]
+          updated_at?: string
+          weight_kg?: number | null
+        }
+        Update: {
+          created_at?: string
+          dimensions?: string | null
+          id?: string
+          packed_at?: string | null
+          reference?: string
+          sales_order_id?: string | null
+          station?: string | null
+          status?: Database["public"]["Enums"]["doc_status"]
+          updated_at?: string
+          weight_kg?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "packs_sales_order_id_fkey"
+            columns: ["sales_order_id"]
+            isOneToOne: false
+            referencedRelation: "sales_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pick_tasks: {
+        Row: {
+          assigned_to: string | null
+          bin_id: string | null
+          created_at: string
+          id: string
+          product_id: string | null
+          quantity: number
+          quantity_picked: number
+          sales_order_id: string | null
+          status: Database["public"]["Enums"]["doc_status"]
+          updated_at: string
+          wave_id: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          bin_id?: string | null
+          created_at?: string
+          id?: string
+          product_id?: string | null
+          quantity?: number
+          quantity_picked?: number
+          sales_order_id?: string | null
+          status?: Database["public"]["Enums"]["doc_status"]
+          updated_at?: string
+          wave_id?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          bin_id?: string | null
+          created_at?: string
+          id?: string
+          product_id?: string | null
+          quantity?: number
+          quantity_picked?: number
+          sales_order_id?: string | null
+          status?: Database["public"]["Enums"]["doc_status"]
+          updated_at?: string
+          wave_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pick_tasks_bin_id_fkey"
+            columns: ["bin_id"]
+            isOneToOne: false
+            referencedRelation: "bins"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pick_tasks_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pick_tasks_sales_order_id_fkey"
+            columns: ["sales_order_id"]
+            isOneToOne: false
+            referencedRelation: "sales_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pick_tasks_wave_id_fkey"
+            columns: ["wave_id"]
+            isOneToOne: false
+            referencedRelation: "pick_waves"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pick_waves: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          reference: string
+          released_at: string | null
+          status: Database["public"]["Enums"]["doc_status"]
+          updated_at: string
+          warehouse_id: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          reference: string
+          released_at?: string | null
+          status?: Database["public"]["Enums"]["doc_status"]
+          updated_at?: string
+          warehouse_id?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          reference?: string
+          released_at?: string | null
+          status?: Database["public"]["Enums"]["doc_status"]
+          updated_at?: string
+          warehouse_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pick_waves_warehouse_id_fkey"
             columns: ["warehouse_id"]
             isOneToOne: false
             referencedRelation: "warehouses"
@@ -337,6 +808,176 @@ export type Database = {
           },
         ]
       }
+      putaway_tasks: {
+        Row: {
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          from_location: string | null
+          id: string
+          product_id: string | null
+          quantity: number
+          receiving_id: string | null
+          reference: string
+          status: Database["public"]["Enums"]["doc_status"]
+          to_bin_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          from_location?: string | null
+          id?: string
+          product_id?: string | null
+          quantity?: number
+          receiving_id?: string | null
+          reference: string
+          status?: Database["public"]["Enums"]["doc_status"]
+          to_bin_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          from_location?: string | null
+          id?: string
+          product_id?: string | null
+          quantity?: number
+          receiving_id?: string | null
+          reference?: string
+          status?: Database["public"]["Enums"]["doc_status"]
+          to_bin_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "putaway_tasks_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "putaway_tasks_receiving_id_fkey"
+            columns: ["receiving_id"]
+            isOneToOne: false
+            referencedRelation: "receiving_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "putaway_tasks_to_bin_id_fkey"
+            columns: ["to_bin_id"]
+            isOneToOne: false
+            referencedRelation: "bins"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      qc_inspections: {
+        Row: {
+          created_at: string
+          external_id: string | null
+          id: string
+          inspected_at: string
+          inspector: string | null
+          lot: string | null
+          notes: string | null
+          product_id: string | null
+          result: string
+        }
+        Insert: {
+          created_at?: string
+          external_id?: string | null
+          id?: string
+          inspected_at?: string
+          inspector?: string | null
+          lot?: string | null
+          notes?: string | null
+          product_id?: string | null
+          result: string
+        }
+        Update: {
+          created_at?: string
+          external_id?: string | null
+          id?: string
+          inspected_at?: string
+          inspector?: string | null
+          lot?: string | null
+          notes?: string | null
+          product_id?: string | null
+          result?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qc_inspections_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_holds: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          external_ref: string | null
+          id: string
+          lot: string | null
+          product_id: string | null
+          qc_source: string | null
+          quantity: number
+          reason: string
+          reference: string
+          released_at: string | null
+          severity: string | null
+          status: Database["public"]["Enums"]["doc_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          external_ref?: string | null
+          id?: string
+          lot?: string | null
+          product_id?: string | null
+          qc_source?: string | null
+          quantity?: number
+          reason: string
+          reference: string
+          released_at?: string | null
+          severity?: string | null
+          status?: Database["public"]["Enums"]["doc_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          external_ref?: string | null
+          id?: string
+          lot?: string | null
+          product_id?: string | null
+          qc_source?: string | null
+          quantity?: number
+          reason?: string
+          reference?: string
+          released_at?: string | null
+          severity?: string | null
+          status?: Database["public"]["Enums"]["doc_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_holds_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       racks: {
         Row: {
           aisle_id: string
@@ -374,6 +1015,118 @@ export type Database = {
             columns: ["aisle_id"]
             isOneToOne: false
             referencedRelation: "aisles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      receiving_lines: {
+        Row: {
+          created_at: string
+          id: string
+          lot: string | null
+          product_id: string | null
+          quantity_expected: number
+          quantity_received: number
+          receiving_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lot?: string | null
+          product_id?: string | null
+          quantity_expected?: number
+          quantity_received?: number
+          receiving_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lot?: string | null
+          product_id?: string | null
+          quantity_expected?: number
+          quantity_received?: number
+          receiving_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receiving_lines_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receiving_lines_receiving_id_fkey"
+            columns: ["receiving_id"]
+            isOneToOne: false
+            referencedRelation: "receiving_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      receiving_orders: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          expected_at: string | null
+          id: string
+          notes: string | null
+          purchase_order_id: string | null
+          received_at: string | null
+          reference: string
+          status: Database["public"]["Enums"]["doc_status"]
+          supplier_id: string | null
+          updated_at: string
+          warehouse_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          expected_at?: string | null
+          id?: string
+          notes?: string | null
+          purchase_order_id?: string | null
+          received_at?: string | null
+          reference: string
+          status?: Database["public"]["Enums"]["doc_status"]
+          supplier_id?: string | null
+          updated_at?: string
+          warehouse_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          expected_at?: string | null
+          id?: string
+          notes?: string | null
+          purchase_order_id?: string | null
+          received_at?: string | null
+          reference?: string
+          status?: Database["public"]["Enums"]["doc_status"]
+          supplier_id?: string | null
+          updated_at?: string
+          warehouse_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receiving_orders_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receiving_orders_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receiving_orders_warehouse_id_fkey"
+            columns: ["warehouse_id"]
+            isOneToOne: false
+            referencedRelation: "warehouses"
             referencedColumns: ["id"]
           },
         ]
@@ -467,6 +1220,63 @@ export type Database = {
             columns: ["warehouse_id"]
             isOneToOne: false
             referencedRelation: "warehouses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shipments: {
+        Row: {
+          carrier_id: string | null
+          created_at: string
+          delivered_at: string | null
+          destination: string | null
+          id: string
+          reference: string
+          sales_order_id: string | null
+          shipped_at: string | null
+          status: Database["public"]["Enums"]["doc_status"]
+          tracking_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          carrier_id?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          destination?: string | null
+          id?: string
+          reference: string
+          sales_order_id?: string | null
+          shipped_at?: string | null
+          status?: Database["public"]["Enums"]["doc_status"]
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          carrier_id?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          destination?: string | null
+          id?: string
+          reference?: string
+          sales_order_id?: string | null
+          shipped_at?: string | null
+          status?: Database["public"]["Enums"]["doc_status"]
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipments_carrier_id_fkey"
+            columns: ["carrier_id"]
+            isOneToOne: false
+            referencedRelation: "carriers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipments_sales_order_id_fkey"
+            columns: ["sales_order_id"]
+            isOneToOne: false
+            referencedRelation: "sales_orders"
             referencedColumns: ["id"]
           },
         ]
@@ -636,6 +1446,20 @@ export type Database = {
         | "operator"
         | "quality"
         | "maintenance"
+      doc_status:
+        | "draft"
+        | "open"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
+        | "on_hold"
+      integration_system:
+        | "mes"
+        | "qms"
+        | "oms"
+        | "cmms"
+        | "qc_system"
+        | "command_center"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -770,6 +1594,22 @@ export const Constants = {
         "operator",
         "quality",
         "maintenance",
+      ],
+      doc_status: [
+        "draft",
+        "open",
+        "in_progress",
+        "completed",
+        "cancelled",
+        "on_hold",
+      ],
+      integration_system: [
+        "mes",
+        "qms",
+        "oms",
+        "cmms",
+        "qc_system",
+        "command_center",
       ],
     },
   },
