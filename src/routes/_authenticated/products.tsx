@@ -31,7 +31,13 @@ function ProductsPage() {
   }
   useEffect(() => { load(); }, []);
 
-  const filtered = rows.filter((r) => !q || r.sku.toLowerCase().includes(q.toLowerCase()) || r.name.toLowerCase().includes(q.toLowerCase()));
+  const [cat, setCat] = useState("");
+  const categories = useMemo(() => Array.from(new Set(rows.map((r) => r.category).filter(Boolean))) as string[], [rows]);
+  const filtered = rows.filter((r) => {
+    const matchQ = !q || r.sku.toLowerCase().includes(q.toLowerCase()) || r.name.toLowerCase().includes(q.toLowerCase());
+    const matchC = !cat || r.category === cat;
+    return matchQ && matchC;
+  });
 
   return (
     <div>
@@ -53,11 +59,17 @@ function ProductsPage() {
         <Stat label="Categories" value={new Set(rows.map(r => r.category)).size} tone="info" />
       </div>
       <div className="glass-panel rounded-2xl p-4">
-        <div className="mb-3 relative max-w-sm">
-          <Search className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search SKU or name…"
-            className="w-full h-9 rounded-lg border border-border/60 bg-card/60 pl-8 pr-3 text-sm" />
-        </div>
+        <TableToolbar
+          q={q} onQ={setQ} placeholder="Search SKU or name…"
+          filterValue={cat} onFilter={setCat} filterOptions={categories} filterLabel="All categories"
+          exportName="products"
+          exportColumns={[
+            { key: "sku", label: "SKU" }, { key: "name", label: "Name" }, { key: "category", label: "Category" },
+            { key: "uom", label: "UoM" }, { key: "abc_class", label: "ABC" },
+            { key: "hazmat", label: "Hazmat" }, { key: "min_stock", label: "Min" }, { key: "max_stock", label: "Max" },
+          ]}
+          exportRows={filtered as unknown as Record<string, unknown>[]}
+        />
         {loading ? <div className="p-6 text-center"><Loader2 className="mx-auto h-4 w-4 animate-spin" /></div>
         : filtered.length === 0 ? (
           <div className="p-10 text-center text-sm text-muted-foreground">
