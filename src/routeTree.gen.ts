@@ -39,6 +39,7 @@ import { Route as AuthenticatedIntegrationsMesRouteImport } from './routes/_auth
 import { Route as AuthenticatedIntegrationsCmmsRouteImport } from './routes/_authenticated/integrations.cmms'
 import { Route as ApiPublicWmsOrdersRouteImport } from './routes/api/public/wms/orders'
 import { Route as ApiPublicWmsInventoryRouteImport } from './routes/api/public/wms/inventory'
+import { Route as ApiPublicHooksSyncMesRouteImport } from './routes/api/public/hooks/sync-mes'
 import { Route as ApiPublicWmsWebhooksQcRouteImport } from './routes/api/public/wms/webhooks/qc'
 import { Route as ApiPublicWmsWebhooksCcRouteImport } from './routes/api/public/wms/webhooks/cc'
 
@@ -201,6 +202,11 @@ const ApiPublicWmsInventoryRoute = ApiPublicWmsInventoryRouteImport.update({
   path: '/api/public/wms/inventory',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksSyncMesRoute = ApiPublicHooksSyncMesRouteImport.update({
+  id: '/api/public/hooks/sync-mes',
+  path: '/api/public/hooks/sync-mes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicWmsWebhooksQcRoute = ApiPublicWmsWebhooksQcRouteImport.update({
   id: '/api/public/wms/webhooks/qc',
   path: '/api/public/wms/webhooks/qc',
@@ -240,6 +246,7 @@ export interface FileRoutesByFullPath {
   '/inventory/adjustments': typeof AuthenticatedInventoryAdjustmentsRoute
   '/warehouses/$id': typeof AuthenticatedWarehousesIdRoute
   '/inventory/': typeof AuthenticatedInventoryIndexRoute
+  '/api/public/hooks/sync-mes': typeof ApiPublicHooksSyncMesRoute
   '/api/public/wms/inventory': typeof ApiPublicWmsInventoryRoute
   '/api/public/wms/orders': typeof ApiPublicWmsOrdersRoute
   '/api/public/wms/webhooks/cc': typeof ApiPublicWmsWebhooksCcRoute
@@ -273,6 +280,7 @@ export interface FileRoutesByTo {
   '/inventory/adjustments': typeof AuthenticatedInventoryAdjustmentsRoute
   '/warehouses/$id': typeof AuthenticatedWarehousesIdRoute
   '/inventory': typeof AuthenticatedInventoryIndexRoute
+  '/api/public/hooks/sync-mes': typeof ApiPublicHooksSyncMesRoute
   '/api/public/wms/inventory': typeof ApiPublicWmsInventoryRoute
   '/api/public/wms/orders': typeof ApiPublicWmsOrdersRoute
   '/api/public/wms/webhooks/cc': typeof ApiPublicWmsWebhooksCcRoute
@@ -308,6 +316,7 @@ export interface FileRoutesById {
   '/_authenticated/inventory/adjustments': typeof AuthenticatedInventoryAdjustmentsRoute
   '/_authenticated/warehouses/$id': typeof AuthenticatedWarehousesIdRoute
   '/_authenticated/inventory/': typeof AuthenticatedInventoryIndexRoute
+  '/api/public/hooks/sync-mes': typeof ApiPublicHooksSyncMesRoute
   '/api/public/wms/inventory': typeof ApiPublicWmsInventoryRoute
   '/api/public/wms/orders': typeof ApiPublicWmsOrdersRoute
   '/api/public/wms/webhooks/cc': typeof ApiPublicWmsWebhooksCcRoute
@@ -343,6 +352,7 @@ export interface FileRouteTypes {
     | '/inventory/adjustments'
     | '/warehouses/$id'
     | '/inventory/'
+    | '/api/public/hooks/sync-mes'
     | '/api/public/wms/inventory'
     | '/api/public/wms/orders'
     | '/api/public/wms/webhooks/cc'
@@ -376,6 +386,7 @@ export interface FileRouteTypes {
     | '/inventory/adjustments'
     | '/warehouses/$id'
     | '/inventory'
+    | '/api/public/hooks/sync-mes'
     | '/api/public/wms/inventory'
     | '/api/public/wms/orders'
     | '/api/public/wms/webhooks/cc'
@@ -410,6 +421,7 @@ export interface FileRouteTypes {
     | '/_authenticated/inventory/adjustments'
     | '/_authenticated/warehouses/$id'
     | '/_authenticated/inventory/'
+    | '/api/public/hooks/sync-mes'
     | '/api/public/wms/inventory'
     | '/api/public/wms/orders'
     | '/api/public/wms/webhooks/cc'
@@ -419,6 +431,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicHooksSyncMesRoute: typeof ApiPublicHooksSyncMesRoute
   ApiPublicWmsInventoryRoute: typeof ApiPublicWmsInventoryRoute
   ApiPublicWmsOrdersRoute: typeof ApiPublicWmsOrdersRoute
   ApiPublicWmsWebhooksCcRoute: typeof ApiPublicWmsWebhooksCcRoute
@@ -637,6 +650,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWmsInventoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/sync-mes': {
+      id: '/api/public/hooks/sync-mes'
+      path: '/api/public/hooks/sync-mes'
+      fullPath: '/api/public/hooks/sync-mes'
+      preLoaderRoute: typeof ApiPublicHooksSyncMesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/wms/webhooks/qc': {
       id: '/api/public/wms/webhooks/qc'
       path: '/api/public/wms/webhooks/qc'
@@ -731,6 +751,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicHooksSyncMesRoute: ApiPublicHooksSyncMesRoute,
   ApiPublicWmsInventoryRoute: ApiPublicWmsInventoryRoute,
   ApiPublicWmsOrdersRoute: ApiPublicWmsOrdersRoute,
   ApiPublicWmsWebhooksCcRoute: ApiPublicWmsWebhooksCcRoute,
