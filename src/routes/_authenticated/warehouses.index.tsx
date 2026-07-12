@@ -10,7 +10,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,
 } from "@/components/ui/dialog";
 
-export const Route = createFileRoute("/_authenticated/warehouses")({
+export const Route = createFileRoute("/_authenticated/warehouses/")({
   head: () => ({ meta: [{ title: "Warehouses · CORTA WMS" }] }),
   component: WarehousesPage,
 });
