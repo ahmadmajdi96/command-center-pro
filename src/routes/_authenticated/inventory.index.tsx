@@ -7,6 +7,7 @@ import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
 import { useAuth } from "@/hooks/use-auth";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { TableToolbar } from "@/components/table-toolbar";
+import { CategoryPie, BarCard } from "@/components/mini-analytics";
 
 export const Route = createFileRoute("/_authenticated/inventory/")({
   head: () => ({ meta: [{ title: "Inventory · CORTA WMS" }] }),
