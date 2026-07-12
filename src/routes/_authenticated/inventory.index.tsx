@@ -7,6 +7,7 @@ import { PageHeader, Stat, StatusPill } from "@/components/status-pill";
 import { useAuth } from "@/hooks/use-auth";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { TableToolbar } from "@/components/table-toolbar";
+import { CategoryPie, BarCard } from "@/components/mini-analytics";
 
 export const Route = createFileRoute("/_authenticated/inventory/")({
   head: () => ({ meta: [{ title: "Inventory · CORTA WMS" }] }),
@@ -65,12 +66,30 @@ function InventoryPage() {
           </Dialog>
         )} />
 
-      <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="Lines" value={rows.length} tone="primary" />
         <Stat label="Total units" value={totalUnits.toLocaleString()} tone="info" />
         <Stat label="Quality hold" value={rows.filter(r => r.status === "quality_hold").length} tone="warning" />
         <Stat label="Reserved" value={rows.filter(r => r.status === "reserved").length} tone="accent" />
       </div>
+
+      <div className="mb-4 grid gap-3 lg:grid-cols-3">
+        <CategoryPie title="By status" rows={rows as unknown as Record<string, unknown>[]} field="status" />
+        <BarCard
+          title="Units by warehouse"
+          data={Object.entries(rows.reduce<Record<string, number>>((a, r) => {
+            const k = r.warehouses?.code ?? "—"; a[k] = (a[k] ?? 0) + Number(r.qty || 0); return a;
+          }, {})).map(([name, value]) => ({ name, value }))}
+        />
+        <BarCard
+          title="Top SKUs by qty"
+          data={Object.entries(rows.reduce<Record<string, number>>((a, r) => {
+            const k = r.products?.sku ?? "—"; a[k] = (a[k] ?? 0) + Number(r.qty || 0); return a;
+          }, {})).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([name, value]) => ({ name, value }))}
+          color="oklch(0.72 0.18 155)"
+        />
+      </div>
+
 
       <div className="glass-panel rounded-2xl p-4">
         <TableToolbar

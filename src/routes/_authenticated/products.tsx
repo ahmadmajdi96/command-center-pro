@@ -1,12 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Trash2, Loader2, Package } from "lucide-react";
+import { Plus, Trash2, Loader2, Package, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Stat } from "@/components/status-pill";
 import { useAuth } from "@/hooks/use-auth";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { TableToolbar } from "@/components/table-toolbar";
+import { CategoryPie, BarCard } from "@/components/mini-analytics";
 
 export const Route = createFileRoute("/_authenticated/products")({
   head: () => ({ meta: [{ title: "Products · CORTA WMS" }] }),
@@ -52,11 +53,20 @@ function ProductsPage() {
             <ProductForm onDone={() => { setOpen(false); load(); }} />
           </Dialog>
         )} />
-      <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="SKUs" value={rows.length} tone="primary" />
         <Stat label="Hazmat" value={rows.filter(r => r.hazmat).length} tone="destructive" />
         <Stat label="Class A" value={rows.filter(r => r.abc_class === "A").length} tone="warning" />
         <Stat label="Categories" value={new Set(rows.map(r => r.category)).size} tone="info" />
+      </div>
+      <div className="mb-4 grid gap-3 lg:grid-cols-3">
+        <CategoryPie title="By ABC class" rows={rows as unknown as Record<string, unknown>[]} field="abc_class" />
+        <CategoryPie title="By category" rows={rows as unknown as Record<string, unknown>[]} field="category" />
+        <BarCard
+          title="Max stock capacity by SKU"
+          data={rows.slice(0, 8).map((r) => ({ name: r.sku, value: r.max_stock || 0 }))}
+          color="oklch(0.72 0.18 155)"
+        />
       </div>
       <div className="glass-panel rounded-2xl p-4">
         <TableToolbar
@@ -96,13 +106,18 @@ function ProductsPage() {
                   <td className="py-2.5 pr-3 text-xs font-mono">{r.abc_class}</td>
                   <td className="py-2.5 pr-3 text-[11px] text-muted-foreground">{r.min_stock} / {r.max_stock}</td>
                   <td className="py-2.5 pr-3 text-right">
-                    {canManage && (
-                      <button onClick={async () => {
-                        if (!confirm(`Delete ${r.sku}?`)) return;
-                        const { error } = await supabase.from("products").delete().eq("id", r.id);
-                        if (error) toast.error(error.message); else { toast.success("Deleted"); load(); }
-                      }} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>
-                    )}
+                    <div className="inline-flex items-center gap-2">
+                      <Link to="/products/$id" params={{ id: r.id }} className="text-primary hover:underline inline-flex items-center gap-1 text-xs">
+                        <ExternalLink className="h-3 w-3" /> Profile
+                      </Link>
+                      {canManage && (
+                        <button onClick={async () => {
+                          if (!confirm(`Delete ${r.sku}?`)) return;
+                          const { error } = await supabase.from("products").delete().eq("id", r.id);
+                          if (error) toast.error(error.message); else { toast.success("Deleted"); load(); }
+                        }} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

@@ -49,12 +49,12 @@ export function StatusPill({ status, className }: { status: string; className?: 
 }
 
 export function PageHeader({
-  title,
-  subtitle,
-  actions,
+ title,
+ subtitle,
+ actions,
 }: {
-  title: string;
-  subtitle?: string;
+ title: React.ReactNode;
+ subtitle?: React.ReactNode;
   actions?: React.ReactNode;
 }) {
   return (

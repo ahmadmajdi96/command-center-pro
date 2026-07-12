@@ -7,6 +7,7 @@ import { PageHeader, Stat } from "@/components/status-pill";
 import { WarehouseIso, type ZoneDef, type AisleDef, type RackDef, type BinDef } from "@/components/warehouse-iso";
 import { useAuth } from "@/hooks/use-auth";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { CategoryPie, BarCard, TrendCard } from "@/components/mini-analytics";
 
 export const Route = createFileRoute("/_authenticated/warehouses/$id")({
   head: () => ({ meta: [{ title: "Warehouse layout · CORTA WMS" }] }),
@@ -32,6 +33,7 @@ function WarehouseDetail() {
   const [bins, setBins] = useState<BinDef[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [analytics, setAnalytics] = useState<{ inv: Record<string, unknown>[]; sos: Record<string, unknown>[]; pos: Record<string, unknown>[] }>({ inv: [], sos: [], pos: [] });
 
   // Controls
   const [q, setQ] = useState("");
@@ -120,6 +122,20 @@ function WarehouseDetail() {
 
   useEffect(() => { loadWarehousesList(); }, []);
   useEffect(() => { load(); }, [id]);
+  useEffect(() => {
+    (async () => {
+      const [inv, sos, pos] = await Promise.all([
+        supabase.from("inventory").select("id, qty, status, products(sku,name)").eq("warehouse_id", id).limit(500),
+        supabase.from("sales_orders").select("id, status, total_value, created_at").eq("warehouse_id", id).order("created_at", { ascending: false }).limit(500),
+        supabase.from("purchase_orders").select("id, status, total_value, created_at").eq("warehouse_id", id).order("created_at", { ascending: false }).limit(500),
+      ]);
+      setAnalytics({
+        inv: (inv.data ?? []) as unknown as Record<string, unknown>[],
+        sos: (sos.data ?? []) as Record<string, unknown>[],
+        pos: (pos.data ?? []) as Record<string, unknown>[],
+      });
+    })();
+  }, [id]);
 
   // Filters
   const filteredZones = useMemo(() => {
@@ -260,6 +276,20 @@ function WarehouseDetail() {
         <Stat label="Bins" value={`${filteredBins.length}/${bins.length}`} tone="success" />
         <Stat label="Occupied" value={filteredBins.filter(b => b.status === "occupied").length} tone="warning" />
       </div>
+
+      <div className="mb-4 grid gap-3 lg:grid-cols-4">
+        <CategoryPie title="Bin utilization" rows={bins as unknown as Record<string, unknown>[]} field="status" />
+        <BarCard
+          title="Inventory by status (units)"
+          data={Object.entries(analytics.inv.reduce<Record<string, number>>((a, r) => {
+            const k = String((r as any).status ?? "n/a"); a[k] = (a[k] ?? 0) + Number((r as any).qty || 0); return a;
+          }, {})).map(([name, value]) => ({ name, value }))}
+        />
+        <TrendCard title="Sales orders · 30d" rows={analytics.sos} dateField="created_at" color="oklch(0.72 0.18 155)" />
+        <TrendCard title="Purchase orders · 30d" rows={analytics.pos} dateField="created_at" color="oklch(0.78 0.18 75)" />
+      </div>
+
+
 
       {racks.length === 0 ? (
         <div className="glass-panel rounded-2xl p-10 text-center">

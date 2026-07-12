@@ -32,6 +32,7 @@ import { Route as AuthenticatedCarriersRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAuditRouteImport } from './routes/_authenticated/audit'
 import { Route as AuthenticatedInventoryIndexRouteImport } from './routes/_authenticated/inventory.index'
 import { Route as AuthenticatedWarehousesIdRouteImport } from './routes/_authenticated/warehouses.$id'
+import { Route as AuthenticatedProductsIdRouteImport } from './routes/_authenticated/products.$id'
 import { Route as AuthenticatedInventoryAdjustmentsRouteImport } from './routes/_authenticated/inventory.adjustments'
 import { Route as AuthenticatedIntegrationsQmsRouteImport } from './routes/_authenticated/integrations.qms'
 import { Route as AuthenticatedIntegrationsOmsRouteImport } from './routes/_authenticated/integrations.oms'
@@ -166,6 +167,11 @@ const AuthenticatedWarehousesIdRoute =
     path: '/$id',
     getParentRoute: () => AuthenticatedWarehousesRoute,
   } as any)
+const AuthenticatedProductsIdRoute = AuthenticatedProductsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AuthenticatedProductsRoute,
+} as any)
 const AuthenticatedInventoryAdjustmentsRoute =
   AuthenticatedInventoryAdjustmentsRouteImport.update({
     id: '/inventory/adjustments',
@@ -251,7 +257,7 @@ export interface FileRoutesByFullPath {
   '/cycle-counts': typeof AuthenticatedCycleCountsRoute
   '/packing': typeof AuthenticatedPackingRoute
   '/picking': typeof AuthenticatedPickingRoute
-  '/products': typeof AuthenticatedProductsRoute
+  '/products': typeof AuthenticatedProductsRouteWithChildren
   '/purchase-orders': typeof AuthenticatedPurchaseOrdersRoute
   '/putaway': typeof AuthenticatedPutawayRoute
   '/quality': typeof AuthenticatedQualityRoute
@@ -268,6 +274,7 @@ export interface FileRoutesByFullPath {
   '/integrations/oms': typeof AuthenticatedIntegrationsOmsRoute
   '/integrations/qms': typeof AuthenticatedIntegrationsQmsRoute
   '/inventory/adjustments': typeof AuthenticatedInventoryAdjustmentsRoute
+  '/products/$id': typeof AuthenticatedProductsIdRoute
   '/warehouses/$id': typeof AuthenticatedWarehousesIdRoute
   '/inventory/': typeof AuthenticatedInventoryIndexRoute
   '/api/public/hooks/sync-all': typeof ApiPublicHooksSyncAllRoute
@@ -288,7 +295,7 @@ export interface FileRoutesByTo {
   '/cycle-counts': typeof AuthenticatedCycleCountsRoute
   '/packing': typeof AuthenticatedPackingRoute
   '/picking': typeof AuthenticatedPickingRoute
-  '/products': typeof AuthenticatedProductsRoute
+  '/products': typeof AuthenticatedProductsRouteWithChildren
   '/purchase-orders': typeof AuthenticatedPurchaseOrdersRoute
   '/putaway': typeof AuthenticatedPutawayRoute
   '/quality': typeof AuthenticatedQualityRoute
@@ -306,6 +313,7 @@ export interface FileRoutesByTo {
   '/integrations/oms': typeof AuthenticatedIntegrationsOmsRoute
   '/integrations/qms': typeof AuthenticatedIntegrationsQmsRoute
   '/inventory/adjustments': typeof AuthenticatedInventoryAdjustmentsRoute
+  '/products/$id': typeof AuthenticatedProductsIdRoute
   '/warehouses/$id': typeof AuthenticatedWarehousesIdRoute
   '/inventory': typeof AuthenticatedInventoryIndexRoute
   '/api/public/hooks/sync-all': typeof ApiPublicHooksSyncAllRoute
@@ -328,7 +336,7 @@ export interface FileRoutesById {
   '/_authenticated/cycle-counts': typeof AuthenticatedCycleCountsRoute
   '/_authenticated/packing': typeof AuthenticatedPackingRoute
   '/_authenticated/picking': typeof AuthenticatedPickingRoute
-  '/_authenticated/products': typeof AuthenticatedProductsRoute
+  '/_authenticated/products': typeof AuthenticatedProductsRouteWithChildren
   '/_authenticated/purchase-orders': typeof AuthenticatedPurchaseOrdersRoute
   '/_authenticated/putaway': typeof AuthenticatedPutawayRoute
   '/_authenticated/quality': typeof AuthenticatedQualityRoute
@@ -346,6 +354,7 @@ export interface FileRoutesById {
   '/_authenticated/integrations/oms': typeof AuthenticatedIntegrationsOmsRoute
   '/_authenticated/integrations/qms': typeof AuthenticatedIntegrationsQmsRoute
   '/_authenticated/inventory/adjustments': typeof AuthenticatedInventoryAdjustmentsRoute
+  '/_authenticated/products/$id': typeof AuthenticatedProductsIdRoute
   '/_authenticated/warehouses/$id': typeof AuthenticatedWarehousesIdRoute
   '/_authenticated/inventory/': typeof AuthenticatedInventoryIndexRoute
   '/api/public/hooks/sync-all': typeof ApiPublicHooksSyncAllRoute
@@ -386,6 +395,7 @@ export interface FileRouteTypes {
     | '/integrations/oms'
     | '/integrations/qms'
     | '/inventory/adjustments'
+    | '/products/$id'
     | '/warehouses/$id'
     | '/inventory/'
     | '/api/public/hooks/sync-all'
@@ -424,6 +434,7 @@ export interface FileRouteTypes {
     | '/integrations/oms'
     | '/integrations/qms'
     | '/inventory/adjustments'
+    | '/products/$id'
     | '/warehouses/$id'
     | '/inventory'
     | '/api/public/hooks/sync-all'
@@ -463,6 +474,7 @@ export interface FileRouteTypes {
     | '/_authenticated/integrations/oms'
     | '/_authenticated/integrations/qms'
     | '/_authenticated/inventory/adjustments'
+    | '/_authenticated/products/$id'
     | '/_authenticated/warehouses/$id'
     | '/_authenticated/inventory/'
     | '/api/public/hooks/sync-all'
@@ -653,6 +665,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWarehousesIdRouteImport
       parentRoute: typeof AuthenticatedWarehousesRoute
     }
+    '/_authenticated/products/$id': {
+      id: '/_authenticated/products/$id'
+      path: '/$id'
+      fullPath: '/products/$id'
+      preLoaderRoute: typeof AuthenticatedProductsIdRouteImport
+      parentRoute: typeof AuthenticatedProductsRoute
+    }
     '/_authenticated/inventory/adjustments': {
       id: '/_authenticated/inventory/adjustments'
       path: '/inventory/adjustments'
@@ -754,6 +773,19 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedProductsRouteChildren {
+  AuthenticatedProductsIdRoute: typeof AuthenticatedProductsIdRoute
+}
+
+const AuthenticatedProductsRouteChildren: AuthenticatedProductsRouteChildren = {
+  AuthenticatedProductsIdRoute: AuthenticatedProductsIdRoute,
+}
+
+const AuthenticatedProductsRouteWithChildren =
+  AuthenticatedProductsRoute._addFileChildren(
+    AuthenticatedProductsRouteChildren,
+  )
+
 interface AuthenticatedWarehousesRouteChildren {
   AuthenticatedWarehousesIdRoute: typeof AuthenticatedWarehousesIdRoute
 }
@@ -775,7 +807,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCycleCountsRoute: typeof AuthenticatedCycleCountsRoute
   AuthenticatedPackingRoute: typeof AuthenticatedPackingRoute
   AuthenticatedPickingRoute: typeof AuthenticatedPickingRoute
-  AuthenticatedProductsRoute: typeof AuthenticatedProductsRoute
+  AuthenticatedProductsRoute: typeof AuthenticatedProductsRouteWithChildren
   AuthenticatedPurchaseOrdersRoute: typeof AuthenticatedPurchaseOrdersRoute
   AuthenticatedPutawayRoute: typeof AuthenticatedPutawayRoute
   AuthenticatedQualityRoute: typeof AuthenticatedQualityRoute
@@ -803,7 +835,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCycleCountsRoute: AuthenticatedCycleCountsRoute,
   AuthenticatedPackingRoute: AuthenticatedPackingRoute,
   AuthenticatedPickingRoute: AuthenticatedPickingRoute,
-  AuthenticatedProductsRoute: AuthenticatedProductsRoute,
+  AuthenticatedProductsRoute: AuthenticatedProductsRouteWithChildren,
   AuthenticatedPurchaseOrdersRoute: AuthenticatedPurchaseOrdersRoute,
   AuthenticatedPutawayRoute: AuthenticatedPutawayRoute,
   AuthenticatedQualityRoute: AuthenticatedQualityRoute,
