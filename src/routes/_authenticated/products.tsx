@@ -106,13 +106,18 @@ function ProductsPage() {
                   <td className="py-2.5 pr-3 text-xs font-mono">{r.abc_class}</td>
                   <td className="py-2.5 pr-3 text-[11px] text-muted-foreground">{r.min_stock} / {r.max_stock}</td>
                   <td className="py-2.5 pr-3 text-right">
-                    {canManage && (
-                      <button onClick={async () => {
-                        if (!confirm(`Delete ${r.sku}?`)) return;
-                        const { error } = await supabase.from("products").delete().eq("id", r.id);
-                        if (error) toast.error(error.message); else { toast.success("Deleted"); load(); }
-                      }} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>
-                    )}
+                    <div className="inline-flex items-center gap-2">
+                      <Link to="/products/$id" params={{ id: r.id }} className="text-primary hover:underline inline-flex items-center gap-1 text-xs">
+                        <ExternalLink className="h-3 w-3" /> Profile
+                      </Link>
+                      {canManage && (
+                        <button onClick={async () => {
+                          if (!confirm(`Delete ${r.sku}?`)) return;
+                          const { error } = await supabase.from("products").delete().eq("id", r.id);
+                          if (error) toast.error(error.message); else { toast.success("Deleted"); load(); }
+                        }} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
