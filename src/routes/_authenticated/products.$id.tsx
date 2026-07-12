@@ -54,7 +54,7 @@ function ProductProfile() {
   return (
     <div>
       <PageHeader
-        title={<span className="flex items-center gap-2"><Package className="h-4 w-4" /> {p.sku} · {p.name}</span> as unknown as string}
+        title={<span className="flex items-center gap-2"><Package className="h-4 w-4" /> {p.sku} · {p.name}</span>}
         subtitle={`${p.category ?? "Uncategorized"} · ${p.uom} · ABC ${p.abc_class ?? "?"} · Min ${p.min_stock} / Max ${p.max_stock}${p.hazmat ? " · HAZMAT" : ""}`}
         actions={<Link to="/products" className="inline-flex items-center gap-1 rounded-lg border border-border/60 bg-card/60 px-3 py-1.5 text-xs"><ChevronLeft className="h-3.5 w-3.5" />Back</Link>}
       />
