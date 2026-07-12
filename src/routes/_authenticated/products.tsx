@@ -53,11 +53,20 @@ function ProductsPage() {
             <ProductForm onDone={() => { setOpen(false); load(); }} />
           </Dialog>
         )} />
-      <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="SKUs" value={rows.length} tone="primary" />
         <Stat label="Hazmat" value={rows.filter(r => r.hazmat).length} tone="destructive" />
         <Stat label="Class A" value={rows.filter(r => r.abc_class === "A").length} tone="warning" />
         <Stat label="Categories" value={new Set(rows.map(r => r.category)).size} tone="info" />
+      </div>
+      <div className="mb-4 grid gap-3 lg:grid-cols-3">
+        <CategoryPie title="By ABC class" rows={rows as unknown as Record<string, unknown>[]} field="abc_class" />
+        <CategoryPie title="By category" rows={rows as unknown as Record<string, unknown>[]} field="category" />
+        <BarCard
+          title="Max stock capacity by SKU"
+          data={rows.slice(0, 8).map((r) => ({ name: r.sku, value: r.max_stock || 0 }))}
+          color="oklch(0.72 0.18 155)"
+        />
       </div>
       <div className="glass-panel rounded-2xl p-4">
         <TableToolbar
