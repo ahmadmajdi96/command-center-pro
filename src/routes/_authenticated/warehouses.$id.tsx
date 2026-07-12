@@ -122,6 +122,20 @@ function WarehouseDetail() {
 
   useEffect(() => { loadWarehousesList(); }, []);
   useEffect(() => { load(); }, [id]);
+  useEffect(() => {
+    (async () => {
+      const [inv, sos, pos] = await Promise.all([
+        supabase.from("inventory").select("id, qty, status, products(sku,name)").eq("warehouse_id", id).limit(500),
+        supabase.from("sales_orders").select("id, status, total_value, created_at").eq("warehouse_id", id).order("created_at", { ascending: false }).limit(500),
+        supabase.from("purchase_orders").select("id, status, total_value, created_at").eq("warehouse_id", id).order("created_at", { ascending: false }).limit(500),
+      ]);
+      setAnalytics({
+        inv: (inv.data ?? []) as unknown as Record<string, unknown>[],
+        sos: (sos.data ?? []) as Record<string, unknown>[],
+        pos: (pos.data ?? []) as Record<string, unknown>[],
+      });
+    })();
+  }, [id]);
 
   // Filters
   const filteredZones = useMemo(() => {
