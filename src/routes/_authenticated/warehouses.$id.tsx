@@ -7,6 +7,7 @@ import { PageHeader, Stat } from "@/components/status-pill";
 import { WarehouseIso, type ZoneDef, type AisleDef, type RackDef, type BinDef } from "@/components/warehouse-iso";
 import { useAuth } from "@/hooks/use-auth";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { CategoryPie, BarCard, TrendCard } from "@/components/mini-analytics";
 
 export const Route = createFileRoute("/_authenticated/warehouses/$id")({
   head: () => ({ meta: [{ title: "Warehouse layout · CORTA WMS" }] }),
