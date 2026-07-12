@@ -277,6 +277,20 @@ function WarehouseDetail() {
         <Stat label="Occupied" value={filteredBins.filter(b => b.status === "occupied").length} tone="warning" />
       </div>
 
+      <div className="mb-4 grid gap-3 lg:grid-cols-4">
+        <CategoryPie title="Bin utilization" rows={bins as unknown as Record<string, unknown>[]} field="status" />
+        <BarCard
+          title="Inventory by status (units)"
+          data={Object.entries(analytics.inv.reduce<Record<string, number>>((a, r) => {
+            const k = String((r as any).status ?? "n/a"); a[k] = (a[k] ?? 0) + Number((r as any).qty || 0); return a;
+          }, {})).map(([name, value]) => ({ name, value }))}
+        />
+        <TrendCard title="Sales orders · 30d" rows={analytics.sos} dateField="created_at" color="oklch(0.72 0.18 155)" />
+        <TrendCard title="Purchase orders · 30d" rows={analytics.pos} dateField="created_at" color="oklch(0.78 0.18 75)" />
+      </div>
+
+
+
       {racks.length === 0 ? (
         <div className="glass-panel rounded-2xl p-10 text-center">
           <Layers className="mx-auto h-8 w-8 text-muted-foreground" />
