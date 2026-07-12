@@ -33,6 +33,7 @@ function WarehouseDetail() {
   const [bins, setBins] = useState<BinDef[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [analytics, setAnalytics] = useState<{ inv: Record<string, unknown>[]; sos: Record<string, unknown>[]; pos: Record<string, unknown>[] }>({ inv: [], sos: [], pos: [] });
 
   // Controls
   const [q, setQ] = useState("");
