@@ -328,7 +328,7 @@ function QuickSeedButton({ warehouseId, onDone }: { warehouseId: string; onDone:
       }));
       const { data: aArr, error: ae } = await supabase.from("aisles").insert(aisleRows).select();
       if (ae) throw ae;
-      const rackRows: Record<string, unknown>[] = [];
+      const rackRows: { aisle_id: string; code: string; x: number; y: number; w: number; d: number; levels: number }[] = [];
       for (const ai of aArr!) {
         for (let j = 0; j < 6; j++) {
           rackRows.push({ aisle_id: ai.id, code: `${ai.code}-${String(j + 1).padStart(2, "0")}`, x: ai.x, y: ai.y + j * 6, w: 3, d: 1.2, levels: 4 });
@@ -336,7 +336,7 @@ function QuickSeedButton({ warehouseId, onDone }: { warehouseId: string; onDone:
       }
       const { data: rArr, error: re } = await supabase.from("racks").insert(rackRows).select();
       if (re) throw re;
-      const binRows: Record<string, unknown>[] = [];
+      const binRows: { rack_id: string; code: string; level: number; position: number; status: string }[] = [];
       for (const r of rArr!) {
         for (let l = 1; l <= r.levels; l++) {
           for (let p = 1; p <= 2; p++) {
